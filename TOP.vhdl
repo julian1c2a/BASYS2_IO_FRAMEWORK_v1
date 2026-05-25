@@ -92,6 +92,43 @@ ARCHITECTURE RTL OF TOP IS
     SIGNAL S_DATOS_DISP : DATO_4DISP7SEGS_T;
     SIGNAL S_WIN_BASE   : INTEGER RANGE 0 TO 6; -- Primer índice de la ventana (0,2,4,6)
 
+    -- -------------------------------------------------------------------------
+    -- Declaraciones de componentes
+    --   ISE XST no soporta "ENTITY lib.entity" para librerías no-WORK.
+    --   Con COMPONENT, ISE resuelve la ligadura por nombre en todas las
+    --   librerías del proyecto, sea cual sea la Library asignada al fichero.
+    -- -------------------------------------------------------------------------
+    COMPONENT GEN_IO_CLK IS
+        GENERIC(MAX_COUNT : POSITIVE RANGE 3 TO POSITIVE'HIGH);
+        PORT(
+            RST    : IN  STD_LOGIC;
+            CLK    : IN  STD_LOGIC;
+            IO_CLK : OUT STD_LOGIC
+        );
+    END COMPONENT GEN_IO_CLK;
+
+    COMPONENT DISPLAY_CTRL IS
+        PORT(
+            CLK        : IN  STD_LOGIC;
+            RST        : IN  STD_LOGIC;
+            TICK_500HZ : IN  STD_LOGIC;
+            DATOS_IN   : IN  DATO_4DISP7SEGS_T;
+            AN         : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+            SEG        : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+        );
+    END COMPONENT DISPLAY_CTRL;
+
+    COMPONENT OPERATION_2 IS
+        PORT(
+            CLK      : IN  STD_LOGIC;
+            RST      : IN  STD_LOGIC;
+            START    : IN  STD_LOGIC;
+            DATA_IN  : IN  MEMORY_T;
+            DATA_OUT : OUT MEMORY_T;
+            READY    : OUT STD_LOGIC
+        );
+    END COMPONENT OPERATION_2;
+
 BEGIN
 
     -- =========================================================================
@@ -99,12 +136,12 @@ BEGIN
     -- =========================================================================
 
     -- 500 Hz → base de multiplexación de los 4 displays (cada dígito activo ~0,5 ms)
-    U_CLK_500HZ : ENTITY WORK.GEN_IO_CLK
+    U_CLK_500HZ : GEN_IO_CLK
         GENERIC MAP (MAX_COUNT => C_MAX_500HZ)
         PORT MAP (RST => RST, CLK => CLK, IO_CLK => S_CLK_500HZ);
 
     -- 2 Hz → dominio de interacción humana con filtrado natural de rebotes
-    U_IO_CLK : ENTITY WORK.GEN_IO_CLK
+    U_IO_CLK : GEN_IO_CLK
         GENERIC MAP (MAX_COUNT => C_MAX_IO_CLK)
         PORT MAP (RST => RST, CLK => CLK, IO_CLK => S_IO_CLK);
 
@@ -134,7 +171,7 @@ BEGIN
     -- [3]  Controlador de displays de 7 segmentos
     -- =========================================================================
 
-    U_DISPLAY : ENTITY D7S.DISPLAY_CTRL
+    U_DISPLAY : DISPLAY_CTRL
         PORT MAP (
             CLK        => CLK,
             RST        => RST,
@@ -150,7 +187,7 @@ BEGIN
     --      conservando la misma interfaz (CLK, RST, START, DATA_IN, DATA_OUT, READY).
     -- =========================================================================
 
-    U_OPERACION : ENTITY WORK.OP_IDENTITY
+    U_OPERACION : OPERATION_2
         PORT MAP (
             CLK      => CLK,
             RST      => RST,
@@ -210,9 +247,10 @@ BEGIN
                     END IF;
 
                 -- [2] OPERACION ────────────────────────────────────────────────
-                -- Espera la señal READY del módulo de operación.
-                -- La transición es automática, sin intervención del usuario.
+                -- Mantiene START='1' hasta que el módulo señale READY.
+                -- Necesario para módulos de múltiples ciclos (ej. OPERATION_2).
                 WHEN OPERACION =>
+                    S_START <= '1';
                     IF S_READY = '1' THEN
                         S_STATE <= SALIDA;
                     END IF;
