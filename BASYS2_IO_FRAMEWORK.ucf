@@ -1,0 +1,64 @@
+# ==============================================================================
+# Archivo UCF estructurado para Framework de Entrada/Salida - BASYS 2
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Reloj del Sistema
+# ------------------------------------------------------------------------------
+NET "CLK" LOC = "B8"; # Bank = 0, Signal name = MCLK
+NET "CLK" TNM_NET = "CLK";
+TIMESPEC TS_clk = PERIOD "CLK" 20 ns HIGH 50%; # Para 50MHz (1/50MHz = 20ns)
+
+# ------------------------------------------------------------------------------
+# Displays de 7 Segmentos
+# ------------------------------------------------------------------------------
+# Segmentos (Activos a nivel bajo)
+NET "SEG<0>" LOC = "L14"; # Bank = 1, Signal name = CA
+NET "SEG<1>" LOC = "H12"; # Bank = 1, Signal name = CB
+NET "SEG<2>" LOC = "N14"; # Bank = 1, Signal name = CC
+NET "SEG<3>" LOC = "N11"; # Bank = 2, Signal name = CD
+NET "SEG<4>" LOC = "P12"; # Bank = 2, Signal name = CE
+NET "SEG<5>" LOC = "L13"; # Bank = 1, Signal name = CF
+NET "SEG<6>" LOC = "M12"; # Bank = 1, Signal name = CG
+NET "SEG<7>" LOC = "N13"; # Bank = 1, Signal name = DP
+
+# Ánodos (Activos a nivel bajo para multiplexación)
+NET "AN<3>" LOC = "K14"; # Bank = 1, Signal name = AN3
+NET "AN<2>" LOC = "M13"; # Bank = 1, Signal name = AN2
+NET "AN<1>" LOC = "J12"; # Bank = 1, Signal name = AN1
+NET "AN<0>" LOC = "F12"; # Bank = 1, Signal name = AN0
+
+# ------------------------------------------------------------------------------
+# LEDs (Indicadores de Estado de la FSM)
+# ------------------------------------------------------------------------------
+NET "LED<7>" LOC = "G1"; # Bank = 3, Signal name = LD7
+NET "LED<6>" LOC = "P4"; # Bank = 2, Signal name = LD6
+NET "LED<5>" LOC = "N4"; # Bank = 2, Signal name = LD5
+NET "LED<4>" LOC = "N5"; # Bank = 2, Signal name = LD4
+NET "LED<3>" LOC = "P6"; # Bank = 2, Signal name = LD3
+NET "LED<2>" LOC = "P7"; # Bank = 3, Signal name = LD2
+NET "LED<1>" LOC = "M11"; # Bank = 2, Signal name = LD1
+NET "LED<0>" LOC = "M5"; # Bank = 2, Signal name = LD0
+
+# ------------------------------------------------------------------------------
+# Interruptores (Switches)
+# ------------------------------------------------------------------------------
+NET "SW<7>" LOC = "N3"; # Bank = 2, Signal name = SW7
+NET "SW<6>" LOC = "E2"; # Bank = 3, Signal name = SW6
+NET "SW<5>" LOC = "F3"; # Bank = 3, Signal name = SW5
+NET "SW<4>" LOC = "G3"; # Bank = 3, Signal name = SW4
+NET "SW<3>" LOC = "B4"; # Bank = 3, Signal name = SW3
+NET "SW<2>" LOC = "K3"; # Bank = 3, Signal name = SW2
+NET "SW<1>" LOC = "L3"; # Bank = 3, Signal name = SW1
+NET "SW<0>" LOC = "P11"; # Bank = 2, Signal name = SW0
+
+# ------------------------------------------------------------------------------
+# Botones (Pulsadores)
+# ------------------------------------------------------------------------------
+# Reset global mapeado al BTN3, tal y como especifica el README.
+NET "RST"    LOC = "A7"; # Bank = 1, Signal name = BTN3
+
+# Botones de control para validación y cambio de estado
+NET "BTN<2>" LOC = "M4"; # Bank = 0, Signal name = BTN2
+NET "BTN<1>" LOC = "C11"; # Bank = 2, Signal name = BTN1
+NET "BTN<0>" LOC = "G12"; # Bank = 0, Signal name = BTN0

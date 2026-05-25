@@ -1,0 +1,11 @@
+# Ignorar todo por defecto
+*
+
+# Permitir que git recorra subdirectorios
+!*/
+
+# Ficheros de repositorio
+!.gitignore
+!*.md
+!*.vhdl
+!*.ucf

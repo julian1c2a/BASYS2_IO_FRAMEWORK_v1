@@ -1,0 +1,42 @@
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.NUMERIC_STD.ALL;
+
+
+LIBRARY GENERAL;
+USE GENERAL.MEMORY_TYPES.C_DBUS_WIDTH;
+USE GENERAL.MEMORY_TYPES.C_ABUS_WIDTH;
+USE GENERAL.MEMORY_TYPES.C_DBUS_MSB;
+USE GENERAL.MEMORY_TYPES.C_ABUS_MSB;
+USE GENERAL.MEMORY_TYPES.MEMORY_T;
+
+
+ENTITY OP_IDENTITY IS
+    PORT (
+        SIGNAL CLK      : IN  STD_LOGIC;
+        SIGNAL RST      : IN  STD_LOGIC;
+        SIGNAL START    : IN  STD_LOGIC;
+        SIGNAL DATA_IN  : IN  MEMORY_T; -- Buffer de hasta 8 bytes
+        SIGNAL DATA_OUT : OUT MEMORY_T;
+        SIGNAL READY    : OUT STD_LOGIC
+    );
+END ENTITY OP_IDENTITY;
+
+ARCHITECTURE RTL OF OP_IDENTITY IS
+BEGIN
+    PROCESS(CLK, RST)
+    BEGIN
+        IF RST = '1' THEN
+            DATA_OUT <= (OTHERS => (OTHERS => '0'));
+            READY    <= '0';
+        ELSIF RISING_EDGE(CLK) THEN
+            IF START = '1' THEN
+                -- Nivel 0: Salida es copia exacta de la entrada
+                DATA_OUT <= DATA_IN;
+                READY    <= '1';
+            ELSE
+                READY    <= '0';
+            END IF;
+        END IF;
+    END PROCESS;
+END ARCHITECTURE RTL;
